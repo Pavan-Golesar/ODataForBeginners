@@ -3,6 +3,7 @@ METHOD travelagencyset_get_entityset.
     DATA: lv_osql_where_clause TYPE string.
     lv_osql_where_clause = io_tech_request_context->get_osql_where_clause( ).
 
+#Pass Values back to return structure
     SELECT * FROM stravelag INTO CORRESPONDING FIELDS OF TABLE @et_entityset
       WHERE (lv_osql_where_clause).
 
