@@ -3,7 +3,7 @@
     DATA: ls_key_tab   TYPE /iwbep/s_mgw_name_value_pair,
           ls_entityset TYPE stravelag.
 
-* key is TravelAgencySet(agency#)
+* key is TravelAgencySet(agency#).
     READ TABLE it_key_tab INTO ls_key_tab INDEX 1.
 
     SELECT SINGLE * FROM stravelag INTO ls_entityset WHERE agencynum = ls_key_tab-value.
