@@ -1,0 +1,29 @@
+method TRAVELAGENCYSET_CREATE_ENTITY.
+
+DATA: ls_entityset    TYPE stravelag,
+        ls_key_tab      TYPE /iwbep/s_mgw_name_value_pair,
+        lv_error_entity TYPE string.
+
+  io_data_provider->read_entry_data( IMPORTING es_data = ls_entityset ).
+
+  ls_key_tab-value = ls_entityset-agencynum.
+
+  INSERT into stravelag values ls_entityset.
+
+  IF ( sy-subrc = 0 ).
+* entity inserted
+    er_entity = ls_entityset.
+  ELSE.
+* entity alredy exists
+    CONCATENATE iv_entity_name
+                '('''
+                ls_key_tab-value
+                ''')'
+      INTO lv_error_entity.
+    RAISE EXCEPTION TYPE /iwbep/cx_mgw_busi_exception
+      EXPORTING
+        textid      = /iwbep/cx_mgw_busi_exception=>resource_duplicate
+        entity_type = lv_error_entity.
+  ENDIF.
+
+endmethod.
