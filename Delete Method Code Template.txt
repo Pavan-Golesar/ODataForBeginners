@@ -1,0 +1,27 @@
+METHOD travelagencyset_delete_entity.
+
+  DATA: ls_entityset    TYPE stravelag,
+        ls_key_tab      TYPE /iwbep/s_mgw_name_value_pair,
+        lv_error_entity TYPE string.
+
+* key is TravelAgencySet(agency#)
+  READ TABLE it_key_tab INTO ls_key_tab INDEX 1.
+
+  DELETE FROM stravelag WHERE agencynum = ls_key_tab-value.
+
+  IF ( sy-subrc = 0 ).
+* delete completed
+      else.
+* entity not found
+        concatenate iv_entity_name
+                    '('''
+                    ls_key_tab-value
+                    ''')'
+          into lv_error_entity.
+    RAISE EXCEPTION TYPE /iwbep/cx_mgw_busi_exception
+      EXPORTING
+        textid      = /iwbep/cx_mgw_busi_exception=>resource_not_found
+        entity_type = lv_error_entity.
+  ENDIF.
+
+ENDMETHOD.
