@@ -1,0 +1,18 @@
+--batch
+Content-Type: application/http
+Content-Transfer-Encoding: binary
+
+GET TravelAgencySet(Agencynum='701')?$format=json HTTP/1.1
+
+
+
+
+--batch
+Content-Type: application/http
+Content-Transfer-Encoding: binary
+
+GET TravelAgencySet(Agencynum='705')?$format=json HTTP/1.1
+
+
+
+--batch--
