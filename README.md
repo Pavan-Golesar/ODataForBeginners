@@ -11,8 +11,9 @@ JSON FORMAT
 {
   "d" : {
     "Name" : "Pavan Golesar",
-    "Contract" : "sapparamount@gmail.com",
-    "Technology" : "SAP"
+    "Email" : "sapparamount@gmail.com",
+    "LogonDate" : "\\/Date(1652486400000)\\/",
+    "Tech" : "SAP"
 }
 }
 _________________________________________________________________________________________________________________________________________________________________
