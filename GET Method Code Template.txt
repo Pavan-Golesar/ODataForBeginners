@@ -1,0 +1,30 @@
+  METHOD travelagencyset_get_entity.
+
+    DATA: ls_key_tab   TYPE /iwbep/s_mgw_name_value_pair,
+          ls_entityset TYPE stravelag.
+
+* key is TravelAgencySet(agency#)
+    READ TABLE it_key_tab INTO ls_key_tab INDEX 1.
+
+    SELECT SINGLE * FROM stravelag INTO ls_entityset WHERE agencynum = ls_key_tab-value.
+
+    IF sy-subrc NE 0.
+      DATA: lo_message_container    TYPE REF TO /iwbep/if_message_container.
+      lo_message_container = me->mo_context->get_message_container( ).
+
+      lo_message_container = me->mo_context->get_message_container( ).
+
+      CALL METHOD lo_message_container->add_message_text_only
+        EXPORTING
+          iv_msg_type               = 'E'
+          iv_msg_text               = 'No Data!!!'
+          iv_add_to_response_header = abap_true.
+
+      RAISE EXCEPTION TYPE /iwbep/cx_mgw_busi_exception
+        EXPORTING
+          message_container = lo_message_container.
+    ENDIF.
+
+    er_entity = ls_entityset.
+
+  ENDMETHOD.
