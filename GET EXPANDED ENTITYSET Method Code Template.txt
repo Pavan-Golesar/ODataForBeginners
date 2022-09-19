@@ -1,0 +1,165 @@
+  METHOD /iwbep/if_mgw_appl_srv_runtime~get_expanded_entityset.
+*--------------------------------------------------------------------*
+*                         Deep Structure
+*--------------------------------------------------------------------*
+    DATA:  BEGIN OF ls_order_items.
+             INCLUDE       TYPE zcl_zdemo13_mpc_ext=>ts_header.
+    DATA:    navitem TYPE STANDARD TABLE OF zcl_zdemo13_mpc_ext=>ts_item WITH DEFAULT KEY,
+           END OF ls_order_items,
+           ls_item1 TYPE zcl_zdemo13_mpc_ext=>ts_item.
+
+*--------------------------------------------------------------------*
+*                       Data Declarations
+*--------------------------------------------------------------------*
+    DATA : ls_item                  TYPE zcl_zdemo13_mpc_ext=>ts_item,
+           lt_item                  TYPE TABLE OF zcl_zdemo13_mpc_ext=>ts_item,
+           ls_header                TYPE zcl_zdemo13_mpc_ext=>ts_header,
+           lthead                   TYPE STANDARD TABLE OF bapiekkol,
+           lshead                   TYPE bapiekkol,
+           lsitem                   TYPE bapiekpo,
+           ltitem                   TYPE STANDARD TABLE OF bapiekpo,
+           lv_filter_str            TYPE string,
+           lt_filter_select_options TYPE /iwbep/t_mgw_select_option,
+           ls_filter                TYPE /iwbep/s_mgw_select_option,
+           ls_filter_range          TYPE /iwbep/s_cod_select_option,
+           ls_expanded_clause1      LIKE LINE OF           et_expanded_tech_clauses,
+           ls_expanded_clause2      LIKE LINE OF           et_expanded_tech_clauses,
+           lv_ebeln                 TYPE ebeln,
+           lt_order_items           LIKE TABLE OF ls_order_items.
+
+*--------------------------------------------------------------------*
+*             Entity Set – HeaderSet
+*--------------------------------------------------------------------*
+
+    CASE iv_entity_set_name.
+
+      WHEN 'HeaderSet'.
+
+        LOOP AT it_filter_select_options INTO ls_filter.
+
+          LOOP AT ls_filter-select_options INTO ls_filter_range.
+
+            TRANSLATE ls_filter-property TO UPPER CASE.
+
+            CASE ls_filter-property.
+
+              WHEN 'PONUMBER'.
+
+                lv_ebeln = ls_filter_range-low.
+
+              WHEN OTHERS.
+
+                " Log message in the application log
+
+                me->/iwbep/if_sb_dpc_comm_services~log_message(
+
+                  EXPORTING
+
+                    iv_msg_type   = 'E'
+
+                    iv_msg_id     = '/IWBEP/MC_SB_DPC_ADM'
+
+                    iv_msg_number = 020
+
+                    iv_msg_v1     = ls_filter-property ).
+
+                " Raise Exception
+
+                RAISE EXCEPTION TYPE /iwbep/cx_mgw_tech_exception
+                  EXPORTING
+                    textid = /iwbep/cx_mgw_tech_exception=>internal_error.
+
+            ENDCASE.
+
+          ENDLOOP.
+
+        ENDLOOP.
+
+*--------------------------------------------------------------------*
+
+*             Call Method-BAPI_PO_GETDETAIL
+
+*--------------------------------------------------------------------*
+        CALL FUNCTION 'BAPI_PO_GETDETAIL'
+          EXPORTING
+            purchaseorder = lv_ebeln
+            items         = 'X'
+          IMPORTING
+            po_header     = lshead
+          TABLES
+            po_items      = ltitem.
+
+*--------------------------------------------------------------------*
+
+*             Fill Header Values to Deep Structure
+
+*--------------------------------------------------------------------*
+
+        ls_order_items-po_number = lshead-po_number.
+        ls_order_items-co_code = lshead-co_code.
+        ls_order_items-doc_type = lshead-doc_type.
+
+*--------------------------------------------------------------------*
+
+*             Fill Item values to Deep Structure
+
+*--------------------------------------------------------------------*
+
+        LOOP AT ltitem INTO lsitem.
+
+          CLEAR ls_item1.
+
+          ls_item1-po_number = lsitem-po_number.
+
+          CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+            EXPORTING
+              input  = ls_item1-po_number
+            IMPORTING
+              output = ls_item1-po_number.
+
+          ls_item1-po_item = lsitem-po_item.
+
+          ls_item1-material = lsitem-material.
+
+          APPEND ls_item1 TO ls_order_items-navitem.
+
+        ENDLOOP.
+
+*--------------------------------------------------------------------*
+
+*             Assign the Navigation Proprties name to Expanded Tech clauses
+
+*--------------------------------------------------------------------*
+
+        ls_expanded_clause1  = 'NAVITEM'.
+        APPEND ls_expanded_clause1 TO et_expanded_tech_clauses.
+
+*--------------------------------------------------------------------*
+
+*             Append Deep Strcture Values to Final Internal Table
+
+*--------------------------------------------------------------------*
+
+        APPEND ls_order_items TO lt_order_items.
+
+*--------------------------------------------------------------------*
+
+*             Send back Response to Consumer
+
+*--------------------------------------------------------------------*
+
+        copy_data_to_ref(
+
+          EXPORTING
+
+            is_data = lt_order_items
+
+          CHANGING
+
+            cr_data = er_entityset ).
+
+      WHEN OTHERS.
+
+    ENDCASE.
+
+  ENDMETHOD.
