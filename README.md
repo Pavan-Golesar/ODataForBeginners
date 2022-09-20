@@ -22,6 +22,9 @@ JSON FORMAT
 }
 
 _________________________________________________________________________________________________________________________________________________________________
+
+$BATCH: multipart/mixed; boundary=batch
+
 ![image](https://user-images.githubusercontent.com/25543125/190911060-d4189297-7e9c-41de-be77-c308174b0f5b.png)
 
 ![image](https://user-images.githubusercontent.com/25543125/190911872-2d3b1c24-fc34-40b2-b936-07619701f675.png)
