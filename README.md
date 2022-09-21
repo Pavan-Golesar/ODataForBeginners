@@ -28,26 +28,35 @@ ________________________________________________________________________________
 ![image](https://user-images.githubusercontent.com/25543125/191527130-67d8c3a0-798c-4e47-9f16-aa9cfaa9fb8b.png)
 
 
-*MPC_EXT New 'Type':
-*--------------------------------------------------------------------*
+* --MPC_EXT New 'Type':
+* 
+* --------------------------------------------------------------------*
+* 
 *           Deep Insert Structure
-*--------------------------------------------------------------------*
+*           
+* --------------------------------------------------------------------*
+
   TYPES: BEGIN OF ts_deep_insert.
+  
            INCLUDE TYPE zcl_zdemo13_mpc_ext=>ts_header.
+           
   TYPES: NavItem TYPE STANDARD TABLE OF ts_item WITH DEFAULT KEY,
+  
          END OF ts_deep_insert.
+         
 
 ________________________________________________________________________________________________________________________________________________
-  method DEFINE.
+
+method DEFINE.
 
 DATA lo_entity_type TYPE REF TO /iwbep/if_mgw_odata_entity_typ.
 
     super->define( ).
 
-* Header Entity Name
+* -- Header Entity Name
     lo_entity_type = model->get_entity_type( iv_entity_name = 'Header' ).
 
-* MPC_EXT Deep Structure Name
+* -- MPC_EXT Deep Structure Name
     lo_entity_type->bind_structure( iv_structure_name = 'ZCL_ZDEMO13_MPC_EXT=>TS_DEEP_INSERT').
 
   endmethod.
