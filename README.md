@@ -30,10 +30,12 @@ ________________________________________________________________________________
 
 * MPC_EXT New 'Type':
 
-    TYPES: BEGIN OF ts_deep_insert.
+TYPES: BEGIN OF ts_deep_insert.
+
     INCLUDE TYPE zcl_zdemo13_mpc_ext=>ts_header.
     TYPES: NavItem TYPE STANDARD TABLE OF ts_item WITH DEFAULT KEY,
-    END OF ts_deep_insert.
+
+END OF ts_deep_insert.
     
 ________________________________________________________________________________________________________________________________________________
 
