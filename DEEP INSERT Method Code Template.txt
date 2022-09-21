@@ -1,0 +1,38 @@
+  METHOD /iwbep/if_mgw_appl_srv_runtime~create_deep_entity.
+
+    DATA : ls_deep_entity TYPE zcl_zdemo14_mpc_ext=>ts_deep_insert,
+           lt_item        TYPE TABLE OF zcl_zdemo14_mpc_ext=>ts_item,
+           ls_header      TYPE zcl_zdemo14_mpc_ext=>ts_header.
+
+    TRY.
+        CALL METHOD io_data_provider->read_entry_data
+          IMPORTING
+            es_data = ls_deep_entity.
+
+        IF ls_deep_entity IS NOT INITIAL.
+          CLEAR ls_header.
+          ls_header = CORRESPONDING #( ls_deep_entity ).
+
+          MODIFY zdemo_header FROM ls_header.
+          IF sy-subrc = 0.
+            CLEAR lt_item.
+            lt_item[] = CORRESPONDING #( ls_deep_entity-navitem[] ).
+            TRY.
+                MODIFY zdemo_item FROM TABLE lt_item.
+                IF sy-subrc = 0.                     
+                  CALL METHOD me->copy_data_to_ref  
+                    EXPORTING
+                      is_data = ls_deep_entity
+                    CHANGING
+                      cr_data = er_deep_entity.
+                ENDIF.
+              CATCH cx_root.
+                "Error during insert
+            ENDTRY.
+          ENDIF.
+        ENDIF.
+      CATCH /iwbep/cx_mgw_tech_exception.
+        "Do Nothing[
+    ENDTRY.
+
+  ENDMETHOD.
