@@ -1,0 +1,22 @@
+{
+"d" : {
+"MoveOutDate" : "\\/Date(1652486400000)\\/",
+"AddressInfo" : {
+"HouseNo" : "",
+"HouseNo2" : "",
+"Street" : "2700 Happy Palace",
+"City" : "Boston",
+"PostalCode" : "02110",
+"Region" : "MA",
+"CountryID" : "",
+"POBoxPostalCode" : "",
+"POBox" : ""
+},
+"xContractInstallation" : [
+{
+"ContractID" : "300342772",
+"InstallationID" : "70153118"
+}
+]
+}
+}
