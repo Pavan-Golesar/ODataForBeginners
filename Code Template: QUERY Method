@@ -1,7 +1,7 @@
   METHOD dummy_get_entityset.
 * Data Declaration
     DATA:
-      lv_ca      TYPE vkont_kk,
+      lv_cust      TYPE kunnr,
       ls_csprg   TYPE zcustom_structure
       ls_entity  LIKE LINE OF et_entityset,
       ls_key_tab TYPE /iwbep/s_mgw_name_value_pair,
