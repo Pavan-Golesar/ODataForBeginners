@@ -1,80 +1,10 @@
-  METHOD dummy_get_entityset.
-* Data Declaration
-    DATA:
-      lv_cust      TYPE kunnr,
-      ls_csprg   TYPE zcustom_structure
-      ls_entity  LIKE LINE OF et_entityset,
-      ls_key_tab TYPE /iwbep/s_mgw_name_value_pair,
-      lt_filters TYPE /iwbep/t_mgw_select_option,
-      ls_filter  TYPE /iwbep/s_mgw_select_option,
-      lt_csprg   TYPE zcustom_table_type
-      lt_return  TYPE bapirettab,
-      lv_msgvar1 TYPE syst_msgv.
+  METHOD travelagencyset_get_entityset.
 
-* Get filter
-    lt_filters = io_tech_request_context->get_filter( )->get_filter_select_options( ).
-*
-* Get filter for Contract Account
-    READ TABLE lt_filters
-         WITH TABLE KEY property = 'NAME1' 		" THIS IS ABAP VARIABLE NAME
-         INTO ls_filter.
+    DATA: lv_osql_where_clause TYPE string.
 
-    IF sy-subrc EQ 0.
-      ls_csprg-contract_account = ls_filter-select_options[ 1 ]-low.
-      CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
-        EXPORTING
-          input  = ls_csprg-contract_account
-        IMPORTING
-          output = ls_csprg-contract_account.
+    lv_osql_where_clause = io_tech_request_context->get_osql_where_clause( ).
 
-* Validating the input CA
-      SELECT SINGLE KUNNR
-                    FROM KNA1
-                    WHERE KUNNR = @ls_csprg-KUNNR
-                    INTO @DATA(lv_CUST1) ##NEEDED.
+    SELECT * FROM stravelag INTO CORRESPONDING FIELDS OF TABLE @et_entityset
+      WHERE (lv_osql_where_clause).
 
-      IF lv_cust1 IS INITIAL.
-
-*----------------------------Exception Handling--------------------------------*
-        DATA : lo_message_container TYPE REF TO /iwbep/if_message_container,
-               lv_msg_text          TYPE bapi_msg.
-
-        lo_message_container = mo_context->get_message_container( ).
-        lv_msg_text = 'Customer entered is invalid'.
-
-        CALL METHOD lo_message_container->add_message_text_only
-          EXPORTING
-            iv_msg_type = 'E'
-            iv_msg_text = lv_msg_text.
-
-        RAISE EXCEPTION TYPE /iwbep/cx_mgw_busi_exception
-          EXPORTING
-            message_container = lo_message_container.
-      ENDIF.
-
-**---------------------CALLING BACKEND LOGIC TO GET DETAILS------------------------*
-      zcl_cs_social_agency_portal=>get_instance(
-           )->get_hardship_program_list( EXPORTING im_v_input  = ls_csprg-contract_account
-                                         IMPORTING ex_t_output = lt_csprg ).
-
-      CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
-        EXPORTING
-          input  = ls_csprg-customer
-        IMPORTING
-          output = ls_csprg-customer
-
-      LOOP AT lt_csprg ASSIGNING FIELD-SYMBOL(<lfs_csprg_data>).
-        APPEND INITIAL LINE TO et_entityset ASSIGNING FIELD-SYMBOL(<lfs_entity>).
-        <lfs_entity>-customer  = <lfs_csprg_data>-cust_no.
-      ENDLOOP.
-
-* Free memory
-      IF <lfs_csprg_data> IS ASSIGNED.
-        UNASSIGN <lfs_csprg_data>.
-      ENDIF.
-
-      IF <lfs_entity> IS ASSIGNED.
-        UNASSIGN <lfs_entity>.
-      ENDIF.
-    ENDIF.
   ENDMETHOD.
