@@ -60,4 +60,19 @@ $BATCH: multipart/mixed; boundary=batch
 
 ![image](https://user-images.githubusercontent.com/25543125/190911872-2d3b1c24-fc34-40b2-b936-07619701f675.png)
 
-Please write back to us at sapparamount@gmail.com or fill in contact form https://abaper.weebly.com/contact.html
+Please write back to us at sapparamount@gmail.com.
+
+LinkedIn
+linkedin.com/pulse/sap-btp-abap-environment-series-pavan-golesar
+
+Medium
+medium.com/@pavangolesar/exploring-sap-btp-abap-environment-with-pavan-golesar-72d5e63ae580
+
+SlideShare
+slideshare.net/PavanGolesar
+
+Twitter
+twitter.com/SAP_Cr7
+
+Explore16k Music Production
+soundcloud.com/ethic-coder-pavan-golesar
